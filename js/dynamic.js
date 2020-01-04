@@ -2,12 +2,17 @@
 var highScoreButton = document.getElementById("highScore");
 var startQuizButton = document.getElementById("startQuiz");
 var timerDisplay = document.querySelector(".timer");
+var timerTrack = document.getElementById("timerTrack");
 
 var content_page = document.querySelector("content_page")
 var content = document.querySelectorAll(".content");
-var question_number = document.querySelector(".question_number");
+var question_number = document.querySelector(".question_number"); 
+var result_log = document.querySelector(".result_log");
 var question_container = document.querySelector(".question_container");
 var welcome_container = document.querySelector(".welcome_container");
+
+var totalTimePermitted;
+var finalScore;
 
 //apply styling to the buttons 
 highScoreButton.classList.add("btn", "btn-primary");
@@ -61,6 +66,7 @@ startQuizButton.addEventListener("click", function () {
     content[0].remove();
     questionNumber();
 
+
 })
 
 
@@ -97,7 +103,27 @@ function questionNumber() {
         event.preventDefault;
         numberOfQuestions = parseInt(input.value);
         content[1].remove();
+
+        // function to keep track of time - starts countDown when user clicks on Enter Button
+        var score = 0;
+        //15 second per question 
+         totalTimePermitted = 15 * numberOfQuestions;
+        var scoreTracker = setInterval(function () {
+            timerTrack.innerHTML = totalTimePermitted;
+            totalTimePermitted--;
+            if(totalTimePermitted === -1 ){
+                //remove an answered question
+               question_container.remove();
+                finalScore = 0;
+             
+            //    logResult(finalScore);
+                clearInterval(scoreTracker);
+            }
+        }, 1000);
+
+        //call to start displaying questions
         questionPage(numberOfQuestions);
+        
     })
 }
 
@@ -105,15 +131,25 @@ function questionNumber() {
 
 //create a page to display the questions
 function questionPage(index) {
+
     var questionDiv = document.createElement("div");
     questionDiv.setAttribute("class", "custom_qstn_container");
     var questionDesc = document.createElement("p");
     var questionOL = document.createElement("ol");
     questionOL.setAttribute("class", "custom_ol");
     questionOL.setAttribute("id", "custom-ol-id");
-
-    if(index > 0){
-    questionDesc.textContent = `${index}. ${questions[index].title}`;
+    console.log("index q = "+index);
+    if (index > 0) {
+        questionDesc.textContent = `${index}. ${questions[index].title}`;
+    } else 
+    if(index === 0){
+        finalScore = totalTimePermitted;
+        logResult(finalScore);
+    } else
+    if(index > 0 && totalTimePermitted === 0){
+        console.log("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+        finalScore = 0;
+        logResult(finalScore);
     }
     questionDiv.appendChild(questionDesc);
     questionDiv.classList.add("mt-4");
@@ -136,9 +172,74 @@ function questionPage(index) {
 
     custom_qstn_container.addEventListener("click", function (event) {
         if ((event.target.nodeName) === "LI") {
-            question_container.removeChild(custom_qstn_container);
-            numberOfQuestions = numberOfQuestions - 1;
-            questionPage(numberOfQuestions);
+            event.target.style.backgroundColor = "#4ae5e8";
+            var answer = event.target.innerText;
+            if (answer === questions[index].answer) {
+                var resultNotification = document.createElement("div");
+                resultNotification.classList.add("bg-success", "text-center")
+                var span = document.createElement("span");
+                resultNotification.appendChild(span);
+                span.textContent = "Correct";
+                question_container.appendChild(resultNotification);
+
+            } else {
+                var resultNotification = document.createElement("div");
+                resultNotification.classList.add("bg-danger", "text-center")
+                var span = document.createElement("span");
+                resultNotification.appendChild(span);
+                span.textContent = `Wrong - correct answer was "${questions[index].answer}" - 10sec Penalty applied`;
+                question_container.appendChild(resultNotification);
+                  totalTimePermitted = totalTimePermitted-13;
+            }
+
+            //function to clear the question page 
+            function clearQuestionContent() {
+                question_container.removeChild(custom_qstn_container);
+                question_container.removeChild(resultNotification);
+                numberOfQuestions = numberOfQuestions - 1;
+                questionPage(numberOfQuestions);
+            }
+            setTimeout(clearQuestionContent, 2000);
         }
     });
+}
+
+
+//function to evaluate the result
+
+function result(){
+    if(totalTimePermitted === 0){
+
+    }
+}
+
+// function to create a result logging page
+
+function logResult(result){
+    result_log.classList.add("text-center", "mt-3");
+
+    var finishConfirmation = document.createElement("h5");
+    var resultDisplay = document.createElement("p");
+    var input = document.createElement("input");
+    var buttonContainer = document.createElement("div");
+    var submitButton = document.createElement("button");
+
+    finishConfirmation.textContent = "All Done !!";
+    result_log.appendChild(finishConfirmation);
+
+    resultDisplay.textContent = `Your Score is ${result}`;
+    result_log.appendChild(resultDisplay);
+
+    finishConfirmation.classList.add("mt-3");
+    input.classList.add("mt-3");
+
+    input.setAttribute("placeHolder", "Please enter your Initials");
+    result_log.appendChild(input);
+
+    submitButton.textContent = "Submit";
+    buttonContainer.classList.add("text-center");
+    submitButton.classList.add("btn", "btn-primary", "m-3");
+    buttonContainer.appendChild(submitButton);
+    result_log.appendChild(buttonContainer);
+
 }

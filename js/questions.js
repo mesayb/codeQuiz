@@ -27,7 +27,7 @@ var questions = [
     {
       title: "Which of the following is true about variable naming conventions in JavaScript?",
       choices: ["JavaScript variable names must begin with a letter or the underscore character.", "JavaScript variable names are case sensitive.", "Both of the above.", "None of the above."],
-      answer: "parentheses"
+      answer: "Both of the above."
     },
     {
       title: "Which built-in method adds one or more elements to the end of an array and returns the new length of the array?",
