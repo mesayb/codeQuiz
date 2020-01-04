@@ -6,31 +6,36 @@ var timerTrack = document.getElementById("timerTrack");
 
 var content_page = document.querySelector("content_page")
 var content = document.querySelectorAll(".content");
-var question_number = document.querySelector(".question_number"); 
+var question_number = document.querySelector(".question_number");
 var result_log = document.querySelector(".result_log");
 var question_container = document.querySelector(".question_container");
 var welcome_container = document.querySelector(".welcome_container");
+var highscore_container = document.querySelector(".highscore_container");
 
 var totalTimePermitted;
 var finalScore;
+var quizResultRecord;
 
 //apply styling to the buttons 
 highScoreButton.classList.add("btn", "btn-primary");
 
+var welcomeDiv;
+createWelcome();
 
 function createWelcome() {
     //create welcome page
+    welcomeDiv = document.createElement("div");
     //header
     var welcomeRow = document.createElement("div");
-    welcome_container.appendChild(welcomeRow);
+    welcomeDiv.appendChild(welcomeRow);
     welcomeRow.classList.add("row");
     var welcomeCol = document.createElement("div");
-    welcome_container.appendChild(welcomeCol);
+    welcomeDiv.appendChild(welcomeCol);
     welcomeCol.classList.add("col-sm-12")
     var welcomeH3 = document.createElement("h3");
     welcomeH3.classList.add("text-center", "mb-4", "mt-4");
     welcomeH3.textContent = "Coding Quiz Challenge";
-    welcome_container.appendChild(welcomeH3);
+    welcomeDiv.appendChild(welcomeH3);
 
     //description
     var welcomeRow2 = document.createElement("div");
@@ -40,7 +45,7 @@ function createWelcome() {
     var welcomePar = document.createElement("p");
     welcomePar.classList.add("text-center");
     welcomePar.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect anwers will penalize your scoretime by 10sec";
-    welcome_container.appendChild(welcomeRow2);
+    welcomeDiv.appendChild(welcomeRow2);
     welcomeRow2.appendChild(welcomeCol2);
     welcomeCol2.appendChild(welcomePar);
 
@@ -52,30 +57,35 @@ function createWelcome() {
     startQuizButton = document.createElement("button");
     startQuizButton.classList.add("btn", "btn-primary", "mb-4", "mt-2");
     startQuizButton.textContent = "Start Quiz";
-    welcome_container.appendChild(welcomeRow3);
+    welcomeDiv.appendChild(welcomeRow3);
     welcomeRow3.appendChild(welcomeCol3);
     welcomeCol3.appendChild(startQuizButton);
 
+    welcome_container.appendChild(welcomeDiv);
+
+    //add eventlistner
+
+    startQuizButton.addEventListener("click", function () {
+        welcomeDiv.remove();
+        //content[0].remove();
+        questionNumber();
+    })
 };
 
-createWelcome();
-//add eventlistner
-
-startQuizButton.addEventListener("click", function () {
-
-    content[0].remove();
-    questionNumber();
-
-
+highScoreButton.addEventListener("click", function(){
+    welcomeDiv.remove();
+    highscorePage();
 })
 
 
 
-var numberOfQuestions;
 
+var numberOfQuestions;
+//var questionDiv;
 //create a page to request number of questions
 function questionNumber() {
-    question_number.classList.add("text-center", "mt-3");
+   var questionDiv = document.createElement("div");
+    questionDiv.classList.add("text-center", "mt-3");
 
     var questionPrompt = document.createElement("h5");
     var input = document.createElement("input");
@@ -83,51 +93,54 @@ function questionNumber() {
     var submitButton = document.createElement("button");
 
     questionPrompt.textContent = "To start taking a quiz please enter number of questions : ";
-    question_number.appendChild(questionPrompt);
+    questionDiv.appendChild(questionPrompt);
 
 
     questionPrompt.classList.add("mt-3");
     input.classList.add("mt-3");
 
     input.setAttribute("placeHolder", "number of questions");
-    question_number.appendChild(input);
+    questionDiv.appendChild(input);
 
     submitButton.textContent = "Enter";
     buttonContainer.classList.add("text-center");
     submitButton.classList.add("btn", "btn-primary", "m-3");
     buttonContainer.appendChild(submitButton);
-    question_number.appendChild(buttonContainer);
+    questionDiv.appendChild(buttonContainer);
 
+    question_number.appendChild(questionDiv);
 
     submitButton.addEventListener("click", function (event) {
         event.preventDefault;
         numberOfQuestions = parseInt(input.value);
-        content[1].remove();
+        questionDiv.remove();
+        // content[1].remove();
 
         // function to keep track of time - starts countDown when user clicks on Enter Button
         var score = 0;
         //15 second per question 
-         totalTimePermitted = 15 * numberOfQuestions;
-        var scoreTracker = setInterval(function () {
-            timerTrack.innerHTML = totalTimePermitted;
-            totalTimePermitted--;
-            if(totalTimePermitted === -1 ){
-                //remove an answered question
-               question_container.remove();
-                finalScore = 0;
-             
-            //    logResult(finalScore);
-                clearInterval(scoreTracker);
-            }
-        }, 1000);
+        totalTimePermitted = 15 * numberOfQuestions;
+        scoreTracker;
 
         //call to start displaying questions
         questionPage(numberOfQuestions);
-        
+
     })
 }
 
+var scoreTracker = setInterval(function () {
+    timerTrack.innerHTML = totalTimePermitted;
 
+    if (totalTimePermitted <= 0) {
+        //remove an answered question
+        question_container.remove();
+        finalScore = 0;
+
+        logResult(finalScore);
+        clearInterval(scoreTracker);
+    };
+    totalTimePermitted--;
+}, 1000);
 
 //create a page to display the questions
 function questionPage(index) {
@@ -138,19 +151,22 @@ function questionPage(index) {
     var questionOL = document.createElement("ol");
     questionOL.setAttribute("class", "custom_ol");
     questionOL.setAttribute("id", "custom-ol-id");
-    console.log("index q = "+index);
+    console.log("index q = " + index);
     if (index > 0) {
         questionDesc.textContent = `${index}. ${questions[index].title}`;
-    } else 
-    if(index === 0){
-        finalScore = totalTimePermitted;
-        logResult(finalScore);
     } else
-    if(index > 0 && totalTimePermitted === 0){
-        console.log("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-        finalScore = 0;
+    if (index === 0) {
+        finalScore = totalTimePermitted;
+        clearInterval(scoreTracker);
         logResult(finalScore);
     }
+    //  else
+    // if(totalTimePermitted < 0){
+    //     console.log("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+    //     finalScore = 0;
+    //     clearInterval(scoreTracker);
+    //     logResult(finalScore);
+    // } 
     questionDiv.appendChild(questionDesc);
     questionDiv.classList.add("mt-4");
 
@@ -189,7 +205,7 @@ function questionPage(index) {
                 resultNotification.appendChild(span);
                 span.textContent = `Wrong - correct answer was "${questions[index].answer}" - 10sec Penalty applied`;
                 question_container.appendChild(resultNotification);
-                  totalTimePermitted = totalTimePermitted-13;
+                totalTimePermitted = totalTimePermitted - 13;
             }
 
             //function to clear the question page 
@@ -199,23 +215,16 @@ function questionPage(index) {
                 numberOfQuestions = numberOfQuestions - 1;
                 questionPage(numberOfQuestions);
             }
-            setTimeout(clearQuestionContent, 2000);
+            setTimeout(clearQuestionContent, 1000);
         }
     });
 }
 
 
-//function to evaluate the result
-
-function result(){
-    if(totalTimePermitted === 0){
-
-    }
-}
 
 // function to create a result logging page
 
-function logResult(result){
+function logResult(result) {
     result_log.classList.add("text-center", "mt-3");
 
     var finishConfirmation = document.createElement("h5");
@@ -242,4 +251,68 @@ function logResult(result){
     buttonContainer.appendChild(submitButton);
     result_log.appendChild(buttonContainer);
 
+    submitButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        var date = (new Date()).toUTCString();
+        quizResultRecord = {
+            initials: input.value.trim(),
+            score: finalScore,
+            date: date,
+        };
+        localStorage.setItem("quizResultRecord", JSON.stringify(quizResultRecord));
+        var rec = localStorage.getItem("quizResultRecord");
+        console.log(rec);
+        result_log.remove();
+        highscorePage();
+    })
+
 }
+
+
+function highscorePage() {
+    highscore_container.classList.add("text-center", "mt-3");
+
+    var highscoreHeader = document.createElement("h5");
+    highscoreHeader.textContent = "Highscores";
+    highscore_container.appendChild(highscoreHeader);
+
+    var ol = document.createElement("ol");
+
+    var quizResultRecord2 = JSON.parse(localStorage.getItem("quizResultRecord"))
+
+
+    var highScorer = document.createElement("p");
+    highScorer.textContent = `1. ${quizResultRecord2.initials} = ${quizResultRecord2.score} `;
+
+    highscore_container.appendChild(highScorer);
+
+    var buttonContainer = document.createElement("div");
+    var goBackButton = document.createElement("button");
+    var clearHighscoreButton = document.createElement("button");
+
+    buttonContainer.classList.add("text-center");
+    goBackButton.textContent = "Go Back";
+    goBackButton.classList.add("btn", "btn-primary", "m-3", "go_back");
+    buttonContainer.appendChild(goBackButton);
+    highscore_container.appendChild(buttonContainer);
+
+    clearHighscoreButton.textContent = "Clear Highscore";
+    clearHighscoreButton.classList.add("btn", "btn-primary", "m-3");
+    buttonContainer.appendChild(clearHighscoreButton);
+    highscore_container.appendChild(buttonContainer);
+
+    // var clearHighscoreButtonSelect = document.querySelector(".go_back");
+    clearHighscoreButton.addEventListener("click", function () {
+        localStorage.removeItem("quizResultRecord");
+        highscore_container.remove();
+        createWelcome();
+    });
+
+    goBackButton.addEventListener("click", function () {
+        highscore_container.remove();
+        createWelcome();
+    });
+
+}
+
+//function to store user result
