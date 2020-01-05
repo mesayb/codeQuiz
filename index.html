@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,53 +13,33 @@
 </head>
 
 <body>
-  <div class="container m-4">
-    <div class="row">
-      <div class="col-sm-1 col-xl-1">
-
-      </div>
-      <div class="col-sm-2 col-xl-2">
-        <button id="highScore"> View HighScores </button>
-      </div>
-      <div class="col-sm-6 col-xl-6">
-
-      </div>
-      <div class="timer col-sm-2 col-xl-2">
-        Time : <span id = "timerTrack">0</span> sec
-      </div>
-      <div class="col-sm-1 col-xl-1">
-
-      </div>
+  <nav class="navbar navbar-light bg-light justify-content-between ml-5 mr-5 mb-3">
+    <button class="btn  ml-5" id="highScore">View Highscores</button>
+    <div class="timer col-sm-2 col-xl-2 mr-5">
+      Time : <span id="timerTrack">0</span> sec
     </div>
-  </div>
-<div class="content_page">
-  <div class="container content welcome_container">
-
-  </div>
-
-  <form>
-    <div class="container question_number content text-center mt-3">
+  </nav>
+  <div class="content_page ">
+    <div class="container content welcome_container bg-white border border-success rounded shadow-lg">
 
     </div>
-  </form>
+    <form>
+      <div class="container question_number content text-center mt-3 bg-white border border-success rounded shadow-lg">
 
-  <form>
-    <div class="container result_log content">
+      </div>
+    </form>
+    <form>
+      <div class="container result_log content bg-white border border-success rounded shadow-lg">
+
+      </div>
+    </form>
+    <div class="container question_container content bg-white border border-success rounded shadow-lg">
 
     </div>
-  </form>
+    <div class="container highscore_container content bg-white border border-success rounded shadow-lg">
 
-  <div class="container question_container content">
-
+    </div>
   </div>
-
-  <div class="container highscore_container content">
-
-  </div>
-
-</div>
-
-
 
   <script src="js/dynamic.js"></script>
   <script src="js/questions.js"></script>
@@ -75,5 +54,4 @@
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
   </script>
 </body>
-
 </html>

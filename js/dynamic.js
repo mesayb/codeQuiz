@@ -16,13 +16,42 @@ var totalTimePermitted;
 var finalScore;
 var quizResultRecord;
 
+//function to hide visible divs in html
+function hideUnUsedDiv(){
+    welcome_container.style.display="none";
+    question_number.style.display="none"; 
+    result_log.style.display="none";
+    question_container.style.display="none";
+    highscore_container.style.display="none"; 
+}
+
+//function to show visible divs in html
+function unHideUnUsedDiv(){
+    welcome_container.style.display="block";
+    question_number.style.display="block"; 
+    result_log.style.display="block";
+    question_container.style.display="block";
+    highscore_container.style.display="block"; 
+}
+
 //apply styling to the buttons 
 highScoreButton.classList.add("btn", "btn-primary");
 
+//apply background image
+var body = document.querySelector("body");
+body.style.backgroundImage = "url('https://images.unsplash.com/photo-1528458876861-544fd1761a91?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1442&q=80')";
+// body.style.backgroundSize = "cover";
+
+
+//create a welcome page
 var welcomeDiv;
 createWelcome();
 
 function createWelcome() {
+    //hide unused divs and show only once we need
+    hideUnUsedDiv();
+    welcome_container.style.display="block";
+
     //create welcome page
     welcomeDiv = document.createElement("div");
     //header
@@ -33,7 +62,7 @@ function createWelcome() {
     welcomeDiv.appendChild(welcomeCol);
     welcomeCol.classList.add("col-sm-12")
     var welcomeH3 = document.createElement("h3");
-    welcomeH3.classList.add("text-center", "mb-4", "mt-4");
+    welcomeH3.classList.add("text-center", "mb-4", "mt-4","pb-2", "border-bottom", "border-success");
     welcomeH3.textContent = "Coding Quiz Challenge";
     welcomeDiv.appendChild(welcomeH3);
 
@@ -44,7 +73,7 @@ function createWelcome() {
     welcomeCol2.classList.add("col-sm-12")
     var welcomePar = document.createElement("p");
     welcomePar.classList.add("text-center");
-    welcomePar.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect anwers will penalize your scoretime by 10sec";
+    welcomePar.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your scoretime by 15sec";
     welcomeDiv.appendChild(welcomeRow2);
     welcomeRow2.appendChild(welcomeCol2);
     welcomeCol2.appendChild(welcomePar);
@@ -67,9 +96,9 @@ function createWelcome() {
 
     startQuizButton.addEventListener("click", function () {
         welcomeDiv.remove();
-        //content[0].remove();
         questionNumber();
-    })
+    });
+    
 };
 
 highScoreButton.addEventListener("click", function(){
@@ -77,17 +106,20 @@ highScoreButton.addEventListener("click", function(){
     highscorePage();
 })
 
-
-
-
+var scoreTracker;
 var numberOfQuestions;
-//var questionDiv;
+
 //create a page to request number of questions
 function questionNumber() {
+    //hide unused divs and show only once we need
+    hideUnUsedDiv();
+    question_number.style.display="block";
+
    var questionDiv = document.createElement("div");
     questionDiv.classList.add("text-center", "mt-3");
 
     var questionPrompt = document.createElement("h5");
+    questionPrompt.classList.add("pb-2", "border-bottom", "border-success");
     var input = document.createElement("input");
     var buttonContainer = document.createElement("div");
     var submitButton = document.createElement("button");
@@ -99,7 +131,7 @@ function questionNumber() {
     questionPrompt.classList.add("mt-3");
     input.classList.add("mt-3");
 
-    input.setAttribute("placeHolder", "number of questions");
+    input.setAttribute("placeHolder", "# of questions (dflt = 5)");
     questionDiv.appendChild(input);
 
     submitButton.textContent = "Enter";
@@ -112,15 +144,28 @@ function questionNumber() {
 
     submitButton.addEventListener("click", function (event) {
         event.preventDefault;
+        //make default number of questions if users clicks submit with out entering a value
+        if(input.value ===""){
+            numberOfQuestions = 5;
+        }else{
         numberOfQuestions = parseInt(input.value);
+    }
         questionDiv.remove();
-        // content[1].remove();
 
         // function to keep track of time - starts countDown when user clicks on Enter Button
         var score = 0;
         //15 second per question 
         totalTimePermitted = 15 * numberOfQuestions;
-        scoreTracker;
+        var scoreTracker = setInterval(function () {
+            timerTrack.innerHTML = totalTimePermitted;
+        
+            if (totalTimePermitted <= 0) {
+               //set score to 0 if user runs out of time
+                finalScore = 0;
+            }else{
+            totalTimePermitted--;
+            }
+        }, 1000);
 
         //call to start displaying questions
         questionPage(numberOfQuestions);
@@ -128,22 +173,12 @@ function questionNumber() {
     })
 }
 
-var scoreTracker = setInterval(function () {
-    timerTrack.innerHTML = totalTimePermitted;
-
-    if (totalTimePermitted <= 0) {
-        //remove an answered question
-        question_container.remove();
-        finalScore = 0;
-
-        logResult(finalScore);
-        clearInterval(scoreTracker);
-    };
-    totalTimePermitted--;
-}, 1000);
 
 //create a page to display the questions
 function questionPage(index) {
+    //hide unused divs and show only once we need
+    hideUnUsedDiv();
+    question_container.style.display="block";
 
     var questionDiv = document.createElement("div");
     questionDiv.setAttribute("class", "custom_qstn_container");
@@ -151,26 +186,26 @@ function questionPage(index) {
     var questionOL = document.createElement("ol");
     questionOL.setAttribute("class", "custom_ol");
     questionOL.setAttribute("id", "custom-ol-id");
-    console.log("index q = " + index);
+
     if (index > 0) {
         questionDesc.textContent = `${index}. ${questions[index].title}`;
     } else
-    if (index === 0) {
+    if (index === 0 && totalTimePermitted > 0 ) {
         finalScore = totalTimePermitted;
         clearInterval(scoreTracker);
         logResult(finalScore);
+    } 
+    else
+    if(index >= 0 && totalTimePermitted <= 0){
+        finalScore = 0;
+        clearInterval(scoreTracker);
+        logResult(finalScore);
     }
-    //  else
-    // if(totalTimePermitted < 0){
-    //     console.log("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-    //     finalScore = 0;
-    //     clearInterval(scoreTracker);
-    //     logResult(finalScore);
-    // } 
+
     questionDiv.appendChild(questionDesc);
     questionDiv.classList.add("mt-4");
 
-    //  questionOL.setAttribute("type","a");
+     questionOL.setAttribute("type","a");
     questionDiv.appendChild(questionOL);
 
     for (var i = 0; i < questions[index].choices.length && index > 0; i++) {
@@ -201,9 +236,9 @@ function questionPage(index) {
             } else {
                 var resultNotification = document.createElement("div");
                 resultNotification.classList.add("bg-danger", "text-center")
-                var span = document.createElement("span");
-                resultNotification.appendChild(span);
-                span.textContent = `Wrong - correct answer was "${questions[index].answer}" - 10sec Penalty applied`;
+                // var resultDiv = document.createElement("div");
+                // resultNotification.appendChild(resultDiv);
+                resultNotification.textContent = `Wrong - correct answer was "${questions[index].answer}" - 15sec Penalty applied`;
                 question_container.appendChild(resultNotification);
                 totalTimePermitted = totalTimePermitted - 13;
             }
@@ -220,11 +255,13 @@ function questionPage(index) {
     });
 }
 
-
-
 // function to create a result logging page
 
 function logResult(result) {
+    //hide unused divs and show only once we need
+    hideUnUsedDiv();
+    result_log.style.display="block";
+
     result_log.classList.add("text-center", "mt-3");
 
     var finishConfirmation = document.createElement("h5");
@@ -233,6 +270,7 @@ function logResult(result) {
     var buttonContainer = document.createElement("div");
     var submitButton = document.createElement("button");
 
+    finishConfirmation.classList.add("pb-2", "border-bottom", "border-success")
     finishConfirmation.textContent = "All Done !!";
     result_log.appendChild(finishConfirmation);
 
@@ -261,8 +299,8 @@ function logResult(result) {
         };
         localStorage.setItem("quizResultRecord", JSON.stringify(quizResultRecord));
         var rec = localStorage.getItem("quizResultRecord");
-        console.log(rec);
         result_log.remove();
+        clearInterval(scoreTracker);
         highscorePage();
     })
 
@@ -270,9 +308,14 @@ function logResult(result) {
 
 
 function highscorePage() {
+    //hide unused divs and show only once we need
+    hideUnUsedDiv();
+    highscore_container.style.display="block";
+
     highscore_container.classList.add("text-center", "mt-3");
 
     var highscoreHeader = document.createElement("h5");
+    highscoreHeader.classList.add("pb-2", "border-bottom", "border-success")
     highscoreHeader.textContent = "Highscores";
     highscore_container.appendChild(highscoreHeader);
 
@@ -314,5 +357,3 @@ function highscorePage() {
     });
 
 }
-
-//function to store user result
