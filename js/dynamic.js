@@ -129,7 +129,7 @@ function questionNumber() {
 
 
     questionPrompt.classList.add("mt-3");
-    input.classList.add("mt-3");
+    input.classList.add("mt-3", "text-center");
 
     input.setAttribute("placeHolder", "# of questions (dflt = 5)");
     questionDiv.appendChild(input);
